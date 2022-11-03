@@ -1,27 +1,15 @@
-apiVersion: machinelearning.seldon.io/v1
-kind: SeldonDeployment
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
 metadata:
   name: mlflow-model
 spec:
-  predictors:
-    - name: default
-      annotations:
-        seldon.io/no-engine: "true"
-      graph:
-        name: mlflow-model
-        type: MODEL
-      componentSpecs:
-        - spec:
-            containers:
-              - name: mlflow-model
-                image: my-docker-image
-                imagePullPolicy: IfNotPresent
-                securityContext:
-                  runAsUser: 0
-                ports:
-                  - containerPort: 8080
-                    name: http
-                    protocol: TCP
-                  - containerPort: 8081
-                    name: grpc
-                    protocol: TCP
+  predictor:
+    containers:
+      - name: mlflow-model
+        image: my-docker-image
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        env:
+          - name: PROTOCOL
+            value: v2
